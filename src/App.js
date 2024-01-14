@@ -1,14 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
-import AppRoutes from './Routes';
-import {BrowserRouter} from 'react-router-dom';
+import AppRoutes from "./Routes";
+import { BrowserRouter } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
+import theme from "./utils/theme";
 
 function App() {
   return (
     <BrowserRouter>
-      <AppRoutes/>
+      <ChakraProvider>
+        <theme/>
+        <AppRoutes />
+      </ChakraProvider>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App;
