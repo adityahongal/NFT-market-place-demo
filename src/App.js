@@ -6,8 +6,7 @@ import theme from "./utils/theme";
 function App() {
   return (
     <BrowserRouter>
-      <ChakraProvider>
-        <theme/>
+      <ChakraProvider theme={theme}>
         <AppRoutes />
       </ChakraProvider>
     </BrowserRouter>
