@@ -1,12 +1,25 @@
 import React from "react";
-import { Box } from '@chakra-ui/react';
+import { Box } from "@chakra-ui/react";
+import { Flex, useColorModeValue, Image } from "@chakra-ui/react";
+import logo from '../../Assets/logo.svg';
 
 const NavBar = () => {
-    return (
-        <Box bg='tomato' w='100%' p={4} m={2} color='white'>
-
-        </Box>
-    )
+  return (
+    <Box>
+      <Flex 
+      bg={useColorModeValue("white", "gray.800")} 
+      minH={"60px"}
+      color={useColorModeValue("gray.600", "white")}
+      borderBottom={1}
+      borderStyle={"solid"}
+      borderColor={useColorModeValue("gray.200", "gray.900")}
+      >
+        <Flex>
+            <Image src={logo}/>
+        </Flex>
+      </Flex>
+    </Box>
+  );
 };
 
 export default NavBar;
