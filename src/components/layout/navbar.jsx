@@ -2,9 +2,9 @@ import React from "react";
 import { Box } from "@chakra-ui/react";
 import { Flex, useColorModeValue, Image, Button } from "@chakra-ui/react";
 import logo from "../../Assets/logo.svg";
-import { NavLink } from "react-router-dom";
-import {navitems} from "../../constants/navitems";
-import { Stack, Text } from '@chakra-ui/react';
+import { NavLink, useLocation } from "react-router-dom";
+import { navitems } from "../../constants/navitems";
+import { Stack, Text } from "@chakra-ui/react";
 
 const NavBar = () => {
   return (
@@ -21,24 +21,34 @@ const NavBar = () => {
         px={{ base: 4 }}
       >
         <Flex flex={{ base: 1 }} justify={{ base: "start" }}>
-          <NavLink to={"/"}>
-            <Image src={logo} />
-          </NavLink>
+          <Flex align={"center"}>
+            <NavLink to={"/"}>
+              <Image src={logo} />
+            </NavLink>
+          </Flex>
 
-          <Flex flex={{ base:1}} justify={{ base: "flex-end"}} direction={"row"}>
+          <Flex display={{ base: "none", lg: "flex" }} ml={16}>
+            <DesktopNav />
+          </Flex>
+
+          <Flex
+            flex={{ base: 1 }}
+            justify={{ base: "flex-end" }}
+            direction={"row"}
+          >
             <Button
-            fontSize={"md"}
-            color={"white"}
-            px={8}
-            bg={"button_gradient"}
-            _hover={{
-                bg: "button_gradient_light"
-            }}
-            _active={{
-                bg: "button_gradient_light"
-            }}
+              fontSize={"md"}
+              color={"white"}
+              px={8}
+              bg={"button_gradient"}
+              _hover={{
+                bg: "button_gradient_light",
+              }}
+              _active={{
+                bg: "button_gradient_light",
+              }}
             >
-                Connect Wallet
+              Connect Wallet
             </Button>
           </Flex>
         </Flex>
@@ -47,19 +57,31 @@ const NavBar = () => {
   );
 };
 
-
 const DesktopNav = () => {
-    return(
-        <Stack direction={"row"} >
-            {navitems.map(({item, link}) => (
-                <NavLink to={link}>
-                    <Text>
-                        {item}
-                    </Text>
-                </NavLink>
-            ))}
-        </Stack>
-    )
+  const location = useLocation();
+  console.log(location);
+  return (
+    <Stack direction={"row"} spacing={10}>
+      {navitems.map(({ item, link }) => (
+        <NavLink to={link}>
+          <Text
+            p={2}
+            fontSize={"md"}
+            fontWeight={400}
+            color={location.pathname === link ? "brand_pink.900" : "gray.800"}
+            _hover={
+              location.pathname !== link && {
+                color: "gray.600",
+                textDecoration: "none",
+              }
+            }
+          >
+            {item}
+          </Text>
+        </NavLink>
+      ))}
+    </Stack>
+  );
 };
 
 export default NavBar;

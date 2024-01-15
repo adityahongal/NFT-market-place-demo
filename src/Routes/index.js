@@ -42,8 +42,18 @@ const publicRoutes = [
   },
   {
     path: "/faq",
-    pageTitle: "faq",
+    pageTitle: "FAQ",
     Component: lazy(() => import("../Pages/FAQ")),
+  },
+  {
+    path: "/how-it-works",
+    pageTitle: "How it Works",
+    Component: lazy(() => import("../Pages/HowItWorks")),
+  },
+  {
+    path: "/featuredartists",
+    pageTitle: "FeaturedArtists",
+    Component: lazy(() => import("../Pages/FeaturedArtists")),
   },
 ];
 

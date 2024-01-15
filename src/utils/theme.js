@@ -1,5 +1,11 @@
 import {extendTheme} from "@chakra-ui/react";
 
+// Color mode config
+const config = {
+    initialColorMode: "light",
+    useSystemColorMode: false,
+  };
+
 const theme = extendTheme({
     fonts: {
         body: "Roboto Slab, serif",
@@ -31,6 +37,8 @@ const theme = extendTheme({
           },
         },
       },
+      config
+      
 });
 
 export default theme;
