@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "../Pages/Home";
 import { Helmet } from "react-helmet";
 import Layout from "../components/layout";
+import { Center, Spinner } from "@chakra-ui/react";
 
 const AppRoutes = () => {
   return (
@@ -21,7 +22,17 @@ const AppRoutes = () => {
                   <title>{`${pageTitle && `${pageTitle} - `}NFT`}</title>
                 </Helmet>
                 <Layout>
-                  <Suspense fallback={<h1>LOADING</h1>}>
+                  <Suspense fallback={
+                    <Center h={"window.innerHeight"} w="full" flex={1}>
+                      <Spinner 
+                      thickness="4px"
+                      speed="0.60s"
+                      emptyColor="gray.200"
+                      color="red.700"
+                      size="xl"
+                      />
+                    </Center>
+                  }>
                     <Component />
                   </Suspense>
                 </Layout>
