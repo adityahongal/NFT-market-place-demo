@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, SimpleGrid, useColorModeValue, Image, Text, Link } from "@chakra-ui/react";
 import { Stack } from "@chakra-ui/react";
+import { NavLink } from "react-router-dom";
 import { footerNavitems } from "../../constants/footerNavItems";
 import logo from "../../Assets/logo.svg"
 
@@ -41,15 +42,14 @@ const DesktopFooterItems = () => {
             <Stack align={"flex-start"} key={headerText}>
               <ListHeader>{headerText}</ListHeader>
                 {children.map(({ item = "", link = "#"}) => (
-                    <Link 
+                    <NavLink 
                     key={item}
-                    href={link}
-                    target={"_blank"}
+                    to={link}
                     _hover={{ color: "red.600", textDecor: "underline" }}
                     fontSize={"sm"}
                     >
                     {item}
-                    </Link>
+                    </NavLink>
                 ))}
             </Stack>
           ))

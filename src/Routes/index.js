@@ -55,6 +55,11 @@ const publicRoutes = [
     pageTitle: "FeaturedArtists",
     Component: lazy(() => import("../Pages/FeaturedArtists")),
   },
+  {
+    path: "/about",
+    pageTitle: "About",
+    Component: lazy(() => import("../Pages/About")),
+  },
 ];
 
 export default AppRoutes;

@@ -1,10 +1,10 @@
 export const footerNavitems = [
     {
-        headerText: "Marketplace",
+        headerText: "NFT Marketplace",
         children: [
             {
                 item: "About",
-                link: "#"
+                link: "/about"
             },
             {
                 item: "Help Center",
