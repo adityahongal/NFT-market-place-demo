@@ -25,3 +25,20 @@ export const footerNavitems = [
         ]
     }
 ]
+
+export const copyrightText = "©2024. All rights reserved."
+
+export const footerBottomContent = [
+    {
+        item: "Terms and Conditions",
+        link: "#",
+    },
+    {
+        item: "Privacy Policy",
+        link: "#",
+    },
+    {
+        item: "Do not sell personal data",
+        link: "#",
+    }
+]
