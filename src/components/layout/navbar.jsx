@@ -1,3 +1,6 @@
+// This Header/Navbar component
+
+
 import React from "react";
 import { Box } from "@chakra-ui/react";
 import { Flex, useColorModeValue, Image, Button } from "@chakra-ui/react";
