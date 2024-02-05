@@ -1,6 +1,3 @@
-// This is footer component
-
-
 import React from "react";
 import { Box, SimpleGrid, useColorModeValue, Image, Text, Link, Button, Divider, StackDivider } from "@chakra-ui/react";
 import { VisuallyHidden, chakra,} from "@chakra-ui/react";
