@@ -23,7 +23,7 @@ const AppRoutes = () => {
                 </Helmet>
                 <Layout>
                   <Suspense fallback={
-                    <Center h={"window.innerHeight"} w="full" flex={1}>
+                    <Center h={window.innerHeight} w={"full"} flex={1}>
                       <Spinner 
                       thickness="4px"
                       speed="0.60s"

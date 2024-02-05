@@ -9,6 +9,5 @@ export const useGetFeaturedListings = (page = 0, size = 10) => {
     queryFn: () => api.get(`/getFeaturedListings?size=${size}&page=${page}`),
     keepPreviousData: true,
   });
-
   return { data: data?.data?.results?.Listings || [], isLoading, isError };
 };

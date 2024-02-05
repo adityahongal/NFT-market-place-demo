@@ -10,7 +10,7 @@ const Layout = ({ children }) => {
       <Box width={"full"}>
         <NavBar />
       </Box>
-      <VStack spacing={0} align={"start"} flex={1}>
+      <VStack spacing={0} align={"start"} w={"full"} flex={1}>
         {children}
       </VStack>
       <Box width={"full"}>
