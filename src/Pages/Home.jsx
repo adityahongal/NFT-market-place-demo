@@ -1,7 +1,16 @@
 import React from "react";
+import { Box } from "@chakra-ui/react";
+
+import {
+  Landing,
+} from "./../components/Home";
 
 const Home = () => {
-    return <h1>you are in home component</h1>
-}
+  return (
+    <Box w={"full"} flex={1}>
+      <Landing />
+    </Box>
+  );
+};
 
 export default Home;
