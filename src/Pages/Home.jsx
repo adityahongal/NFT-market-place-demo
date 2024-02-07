@@ -4,6 +4,7 @@ import { Box } from "@chakra-ui/react";
 import {
   Landing,
   FeaturedArtists,
+  FeaturedProject,
 } from "./../components/Home";
 
 const Home = () => {
@@ -11,6 +12,7 @@ const Home = () => {
     <Box w={"full"} flex={1}>
       <Landing />
       <FeaturedArtists />
+      <FeaturedProject />
     </Box>
   );
 };
