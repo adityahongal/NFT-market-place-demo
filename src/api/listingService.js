@@ -11,3 +11,15 @@ export const useGetFeaturedListings = (page = 0, size = 10) => {
   });
   return { data: data?.data?.results?.Listings || [], isLoading, isError };
 };
+
+export const useGetUserListings = ({ address = "", page = 0, size = 100 }) => {
+  const { data } = useQuery({
+    queryKey: ["get-user-listings", page],
+    queryFn: () => api.get(`/getListingsByAccount/${address}?size=${size}&page=${page}`),
+    keepPreviousData: true,
+  });
+
+  return {
+    data: data?.data?.results?.Listings || [],
+  };
+};
