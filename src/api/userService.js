@@ -27,3 +27,13 @@ export const useGetUserByAddressDelay = () => {
 
   return { mutateAsync };
 };
+
+export const useGetAllArtists = (page = 0, size = 6) => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["get-all-artists", page],
+    queryFn: () => api.get(`/getAllAccounts?size=${size}&page=${page}`),
+    keepPreviousData: true,
+  });
+
+  return { data: data?.data?.results, isLoading, isError };
+};
