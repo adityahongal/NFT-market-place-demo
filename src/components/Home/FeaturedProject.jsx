@@ -41,6 +41,9 @@ const FeaturedProject = () => {
           <Button
             variant={"outline"}
             color={"black"}
+            backgroundColor={"#FFB700"}
+            borderWidth={"2px"}
+          borderColor={"black"}
             w={{ base: "100%", md: "70%" }}
             size={"lg"}
             _hover={{ color: "black", bg: "white" }}

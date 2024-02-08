@@ -72,6 +72,11 @@ const publicRoutes = [
     pageTitle: "Artist Profile",
   },
   {
+    path: "/nft/:contractAddress/:tokenId",
+    Component: lazy(() => import("./../Pages/ArtworkPage")),
+    pageTitle: "Artwork",
+  },
+  {
     path: "/about",
     pageTitle: "About",
     Component: lazy(() => import("../Pages/About")),
