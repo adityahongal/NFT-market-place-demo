@@ -5,6 +5,7 @@ import {
   Landing,
   FeaturedArtists,
   FeaturedProject,
+  WhyWeIntoNFT,
 } from "./../components/Home";
 
 const Home = () => {
@@ -13,6 +14,7 @@ const Home = () => {
       <Landing />
       <FeaturedArtists />
       <FeaturedProject />
+      <WhyWeIntoNFT />
     </Box>
   );
 };
