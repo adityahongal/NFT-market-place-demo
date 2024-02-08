@@ -32,7 +32,6 @@ const Landing = ({ nftDetails }) => {
 
   return (
     <>
-      <h1> LANDING COMPONENT </h1>
       {!isListingLoading && isListed && (
         <Stack
           direction={{ base: "column", lg: "row" }}
