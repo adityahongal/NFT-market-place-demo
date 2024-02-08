@@ -57,11 +57,6 @@ const publicRoutes = [
     Component: lazy(() => import("../Pages/FAQ")),
   },
   {
-    path: "/how-it-works",
-    pageTitle: "How it Works",
-    Component: lazy(() => import("../Pages/HowItWorks")),
-  },
-  {
     path: "/artists",
     Component: lazy(() => import("./../Pages/OurArtists")),
     pageTitle: "Artists",
