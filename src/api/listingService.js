@@ -15,11 +15,21 @@ export const useGetFeaturedListings = (page = 0, size = 10) => {
 export const useGetUserListings = ({ address = "", page = 0, size = 100 }) => {
   const { data } = useQuery({
     queryKey: ["get-user-listings", page],
-    queryFn: () => api.get(`/getListingsByAccount/${address}?size=${size}&page=${page}`),
+    queryFn: () =>
+      api.get(`/getListingsByAccount/${address}?size=${size}&page=${page}`),
     keepPreviousData: true,
   });
 
   return {
     data: data?.data?.results?.Listings || [],
   };
+};
+
+export const useGetListingById = ({ tokenId = "", tokenAddress = "" }) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["get-listing-by-id", tokenId, tokenAddress],
+    queryFn: () => api.get(`/getListing/${String(tokenId)}/${tokenAddress}`),
+  });
+
+  return { data: data?.data?.Listing || {}, isLoading };
 };

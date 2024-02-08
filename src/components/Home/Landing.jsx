@@ -161,7 +161,7 @@ const Landing = () => {
             order={{ base: 3 }}
             display={{ lg: "none" }}
           >
-            Explore Miko NFTs
+            Explore NFTs
           </Button>
         </Stack>
       </Stack>
