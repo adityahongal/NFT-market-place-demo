@@ -66,7 +66,7 @@ const FAQ = () => {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={4}>
-                  Crypto wallets keep your private keys – the passwords that give you access to your cryptocurrencies – safe and accessible, allowing you to send and receive cryptocurrencies like Bitcoin and Ethereum. They come in many forms, from hardware wallets like Ledger (which looks like a USB stick) to mobile apps like miko Wallet, which makes using crypto as easy as shopping with a credit card online.
+                  Crypto wallets keep your private keys – the passwords that give you access to your cryptocurrencies – safe and accessible, allowing you to send and receive cryptocurrencies like Bitcoin and Ethereum. They come in many forms, from hardware wallets like Ledger (which looks like a USB stick) to mobile apps like our Wallet, which makes using crypto as easy as shopping with a credit card online.
                     </AccordionPanel>
                 </>
               )}
