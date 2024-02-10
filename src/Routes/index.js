@@ -57,6 +57,11 @@ const publicRoutes = [
     Component: lazy(() => import("../Pages/FAQ")),
   },
   {
+    path: "/connect-wallet",
+    Component: lazy(() => import("./../Pages/ConnectWallet")),
+    pageTitle: "Connect Wallet",
+  },
+  {
     path: "/artists",
     Component: lazy(() => import("./../Pages/OurArtists")),
     pageTitle: "Artists",

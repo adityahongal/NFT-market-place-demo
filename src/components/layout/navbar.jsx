@@ -36,6 +36,7 @@ const NavBar = () => {
             justify={{ base: "flex-end" }}
             direction={"row"}
           >
+            <NavLink to={"/connect-wallet"}>
             <Button
               fontSize={"md"}
               color={"white"}
@@ -50,6 +51,7 @@ const NavBar = () => {
             >
               Connect Wallet
             </Button>
+            </NavLink>
           </Flex>
         </Flex>
       </Flex>

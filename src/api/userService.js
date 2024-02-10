@@ -1,5 +1,24 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
 import api from "./index";
+
+import { setUser, updateUser } from "./../store/slices/user";
+
+export const useCreateUser = () => {
+  const dispatch = useDispatch();
+
+  const { mutate, isLoading, isError } = useMutation(["create-user"], (body) => api.post("/signup", body), {
+    onSuccess: ({ data }) => {
+      const { account } = data;
+      dispatch(setUser(account));
+    },
+    onError: (error) => {
+      console.log({ error });
+    },
+  });
+
+  return { mutate, isLoading, isError };
+};
 
 export const useGetAllFeaturedArtists = (page = 0, size = 6) => {
   const { data, isLoading, isError } = useQuery({
