@@ -5,14 +5,13 @@ import logo from "../../Assets/logo.svg";
 import { NavLink, useLocation } from "react-router-dom";
 import { navitems } from "../../constants/navitems";
 import { Stack, Text } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { checkWalletExistsLocally } from "./../../store/slices/wallet";
 
 const NavBar = () => {
 
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(checkWalletExistsLocally());
     // eslint-disable-next-line react-hooks/exhaustive-deps
