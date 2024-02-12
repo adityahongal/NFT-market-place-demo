@@ -1,13 +1,38 @@
 // MAIN ROUTER COMPONENT
 
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "../Pages/Home";
 import { Helmet } from "react-helmet";
 import Layout from "../components/layout";
 import { Center, Spinner } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
+import isEmpty from "lodash/isEmpty";
+
+import { setWalletFromPvtKey } from "./../store/slices/wallet";
+import { useGetCurrentUserDetails } from "./../api/userService";
 
 const AppRoutes = () => {
+  const dispatch = useDispatch();
+  const { wallet } = useSelector((state) => state.wallet);
+  const { mutate } = useGetCurrentUserDetails();
+
+  useEffect(() => {
+    if (isEmpty(wallet)) {
+      const delta = localStorage.getItem("delta");
+      const alpha = localStorage.getItem("alpha");
+      const beta = localStorage.getItem("beta");
+      if (delta && alpha && beta) {
+        const pvtKey = `${delta}${alpha}${beta}`;
+        dispatch(
+          setWalletFromPvtKey({
+            mutate,
+            pvtKey,
+          })
+        );
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, wallet]);
   return (
     <Routes>
       {publicRoutes.map((route, index) => {
@@ -75,6 +100,11 @@ const publicRoutes = [
     path: "/artists/:artistId",
     Component: lazy(() => import("./../Pages/ArtistProfilePage")),
     pageTitle: "Artist Profile",
+  },
+  {
+    path: "/profile",
+    Component: lazy(() => import("./../Pages/Profile")),
+    pageTitle: "Profile",
   },
   {
     path: "/nft/:contractAddress/:tokenId",

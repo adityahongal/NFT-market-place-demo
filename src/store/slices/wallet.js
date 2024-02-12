@@ -56,6 +56,10 @@ const slice = createSlice({
       const { walletExists } = action.payload;
       state.walletExists = walletExists;
     },
+    setLoading(state, action) {
+      const { loading } = action.payload;
+      state.loading = loading;
+    },
     setLoggedIn(state, action) {
       const { loggedIn } = action.payload;
       state.loggedIn = loggedIn;
@@ -97,6 +101,64 @@ const savePvtKeyToLocalStorage = (pvtKey) => {
     pvtKey.slice(firstPartLength + secondPartLength)
   );
 };
+
+export const setWalletFromPvtKey =
+  ({ pvtKey, mutate }) =>
+  async (dispatch) => {
+    dispatch(slice.actions.setLoading({ loading: true }));
+    let wallet = new ethers.Wallet(pvtKey);
+
+    if (wallet !== undefined && wallet !== null) {
+      const provider = new ethers.providers.InfuraProvider(
+        process.env.REACT_APP_INFURA_CHAIN_NAME,
+        process.env.REACT_APP_INFURA_PROVIDER_ID
+      );
+      wallet = wallet.connect(provider);
+
+      mutate(wallet.address.toLowerCase());
+
+      dispatch(updateUser({ address: wallet.address.toLowerCase() }));
+      dispatch(slice.actions.setWallet({ wallet: wallet }));
+      dispatch(slice.actions.setLoggedIn({ loggedIn: true }));
+    }
+    dispatch(slice.actions.setLoading({ loading: false }));
+  };
+
+export const login =
+  ({ password, mutate, onSuccess = () => {}, onError = () => {} }) =>
+  async (dispatch) => {
+    try {
+      const encryptedWallet = localStorage.getItem("wallet");
+      const parsedWallet = JSON.parse(encryptedWallet);
+
+      if (parsedWallet !== undefined && parsedWallet !== null) {
+        const provider = new ethers.providers.InfuraProvider(
+          process.env.REACT_APP_INFURA_CHAIN_NAME,
+          process.env.REACT_APP_INFURA_PROVIDER_ID
+        );
+
+        var wallet = await ethers.Wallet.fromEncryptedJson(
+          parsedWallet,
+          password
+        );
+
+        if (wallet !== undefined && wallet !== null) {
+          savePvtKeyToLocalStorage(wallet.privateKey);
+          wallet = wallet.connect(provider);
+
+          mutate(wallet.address.toLowerCase());
+
+          dispatch(updateUser({ address: wallet.address.toLowerCase() }));
+          dispatch(slice.actions.setWallet({ wallet: wallet }));
+          dispatch(slice.actions.setLoggedIn({ loggedIn: true }));
+        }
+        onSuccess();
+      }
+    } catch (err) {
+      console.log(err);
+      onError();
+    }
+  };
 
 export const checkWalletExistsLocally = () => async (dispatch) => {
   const encryptedWallet = localStorage.getItem("wallet");

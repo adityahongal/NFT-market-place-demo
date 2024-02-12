@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import api from "./index";
 
+import { queryClient } from "./../App";
 import { setUser, updateUser } from "./../store/slices/user";
 
 export const useCreateUser = () => {
@@ -47,6 +48,26 @@ export const useGetUserByAddressDelay = () => {
   return { mutateAsync };
 };
 
+export const useGetCurrentUserDetails = () => {
+  const dispatch = useDispatch();
+
+  const { mutate, isLoading, isError } = useMutation(
+    ["get-current-user-details"],
+    (walletAddress) => api.get(`/getAccount/${walletAddress}`),
+    {
+      onSuccess: ({ data }) => {
+        const { account } = data;
+        dispatch(setUser(account));
+      },
+      onError: (error) => {
+        console.log({ error });
+      },
+    }
+  );
+
+  return { mutate, isLoading, isError };
+};
+
 export const useGetAllArtists = (page = 0, size = 6) => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["get-all-artists", page],
@@ -55,4 +76,24 @@ export const useGetAllArtists = (page = 0, size = 6) => {
   });
 
   return { data: data?.data?.results, isLoading, isError };
+};
+
+export const useUpdateUserDetails = () => {
+  const dispatch = useDispatch();
+  const { mutate, isLoading, isError } = useMutation(
+    ["update-user-details"],
+    (body) => api.put("/updateAccount", body),
+    {
+      onSuccess: ({ data }) => {
+        const { updates } = data;
+        queryClient.invalidateQueries("get-current-user-details");
+        dispatch(updateUser(updates));
+      },
+      onError: (error) => {
+        console.log({ error });
+      },
+    }
+  );
+
+  return { mutate, isLoading, isError };
 };
