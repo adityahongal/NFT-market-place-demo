@@ -9,10 +9,12 @@ import {
     resetWalletCreate,
   } from "./../store/slices/layout";
 
-import { LandingScreen,
+import { 
+    LandingScreen,
     CreatePassword,
     ReEnterRecoverySeed,
-    SaveRecoverySeed, } from "../components/ConnectWallet";
+    SaveRecoverySeed, 
+  } from "../components/ConnectWallet";
 import { SuccessScreen } from "./../components/Common";
 
 const ConnectWallet = () => {
@@ -20,7 +22,7 @@ const ConnectWallet = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
-    const { createWalletStep } = useSelector(
+    const { createWalletStep, existingWalletStep } = useSelector(
         connectWalletStateSelector
       );
       const { loading: isWalletLoading, wallet } = useSelector(
@@ -29,7 +31,7 @@ const ConnectWallet = () => {
     
     
     const isInitialStep =
-      createWalletStep === 0 ; //&& existingWalletStep === 0 && loginStep === 0 ;
+      createWalletStep === 0 && existingWalletStep === 0 ; // && loginStep === 0 ;
     const { state } = location;
     
     useEffect(() => {
@@ -61,6 +63,28 @@ const ConnectWallet = () => {
         }
       };
 
+      const getExisitingWalletStep = () => {
+        switch (existingWalletStep) {
+          case 1:
+            return <ReEnterRecoverySeed />;
+          case 2:
+            return <CreatePassword />;
+          case 3:
+            return (
+              <SuccessScreen
+                headingText={"Great! You’ve recovered your wallet."}
+                ctaText={"Show me my NFTs"}
+                ctaOnClick={() => {
+                  navigate(`/profile`);
+                  dispatch(resetWalletCreate());
+                }}
+              />
+            );
+          default:
+            return <></>;
+        }
+      };
+
     return (
 
         <Box bg="background_gradient_1" w={"full"} flex={1}>
@@ -78,6 +102,7 @@ const ConnectWallet = () => {
         <>
           {isInitialStep && <LandingScreen />}
           {getCreateWalletStep()}
+          {getExisitingWalletStep()}
         </>
       )}
     </Box>

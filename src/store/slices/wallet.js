@@ -45,17 +45,21 @@ const slice = createSlice({
       state.seedPhrase = phrase;
     },
     setReEnteredSeedPhrase(state, action) {
-        const { phrase } = action.payload;
-        state.reEnteredSeedPhrase = phrase;
-      },
+      const { phrase } = action.payload;
+      state.reEnteredSeedPhrase = phrase;
+    },
     setWallet(state, action) {
       const { wallet } = action.payload;
       state.wallet = wallet;
     },
+    setWalletExists(state, action) {
+      const { walletExists } = action.payload;
+      state.walletExists = walletExists;
+    },
     setLoggedIn(state, action) {
-        const { loggedIn } = action.payload;
-        state.loggedIn = loggedIn;
-      },
+      const { loggedIn } = action.payload;
+      state.loggedIn = loggedIn;
+    },
   },
 });
 
@@ -94,6 +98,17 @@ const savePvtKeyToLocalStorage = (pvtKey) => {
   );
 };
 
+export const checkWalletExistsLocally = () => async (dispatch) => {
+  const encryptedWallet = localStorage.getItem("wallet");
+  const parsedWallet = JSON.parse(encryptedWallet);
+
+  if (parsedWallet !== undefined && parsedWallet !== null) {
+    dispatch(slice.actions.setWalletExists({ walletExists: true }));
+  } else {
+    dispatch(slice.actions.setWalletExists({ walletExists: false }));
+  }
+};
+
 export const setWallet =
   ({ seedPhrase, password, createUser = () => {}, onComplete = () => {} }) =>
   async (dispatch) => {
@@ -125,5 +140,7 @@ export const setWallet =
       dispatch(slice.actions.setWallet({ wallet }));
       dispatch(slice.actions.setLoggedIn({ loggedIn: true }));
       onComplete();
-    } catch (error) {console.log(error);}
+    } catch (error) {
+      console.log(error);
+    }
   };
