@@ -116,6 +116,11 @@ const publicRoutes = [
     pageTitle: "About",
     Component: lazy(() => import("../Pages/About")),
   },
+  {
+    path: "/settings",
+    Component: lazy(() => import("./../Pages/Settings")),
+    pageTitle: "Settings",
+  },
 ];
 
 export default AppRoutes;

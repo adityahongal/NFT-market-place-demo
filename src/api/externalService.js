@@ -59,3 +59,16 @@ export const getMetaDataByTokenUri = async (tokenUri) => {
 
   return data;
 };
+
+export const useGetNativeBalance = () => {
+  const { mutateAsync, data } = useMutation(
+    ["get-native-balance"],
+    ({ address, chain = process.env.REACT_APP_MORALIS_CHAIN_NAME }) =>
+      axios.get(`https://deep-index.moralis.io/api/v2/${address}/balance`, {
+        params: { chain },
+        headers: { accept: "application/json", "X-API-Key": process.env.REACT_APP_MORALIS_API_KEY },
+      })
+  );
+
+  return { getNativeBalance: mutateAsync, data: data?.data };
+};
