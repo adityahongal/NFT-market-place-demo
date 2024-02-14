@@ -121,6 +121,11 @@ const publicRoutes = [
     Component: lazy(() => import("./../Pages/Settings")),
     pageTitle: "Settings",
   },
+  {
+    path: "/transferMatic",
+    Component: lazy(() => import("./../Pages/TransferMatic")),
+    pageTitle: "Transfer Crypto",
+  },
 ];
 
 export default AppRoutes;

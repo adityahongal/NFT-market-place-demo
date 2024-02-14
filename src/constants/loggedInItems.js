@@ -14,7 +14,7 @@ export const loggedInItemsDetails = [
     },
     {
       item: "Crypto Transfer",
-      link: "/crypto-transfer",
+      link: "/transferMatic",
     },
     {
       item: "Connected D-apps",
