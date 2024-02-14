@@ -7,6 +7,11 @@ const initialState = {
     existingWalletStep: 0,
     loginStep: 0,
   },
+  mintData: {
+    quantity: 1,
+    name: "",
+    description: "",
+  },
 };
 
 export const layoutSlice = createSlice({
@@ -30,11 +35,18 @@ export const layoutSlice = createSlice({
     resetWalletCreate: (state, action) => {
       state.walletCreate = initialState.walletCreate;
     },
+    setMintData: (state, action) => {
+      state.mintData = { ...state.mintData, ...action.payload };
+    },
+    resetMintData: (state, action) => {
+      state.mintData = initialState.mintData;
+    },
   },
 });
 
 export const layoutStateSelector = (state) => state.layout;
 export const connectWalletStateSelector = (state) => state.layout.walletCreate;
+export const mintDataSelector = (state) => state.layout.mintData;
 
 export const reducer = layoutSlice.reducer;
 
@@ -43,5 +55,7 @@ export const {
     setCurrentContext,
     setExistingWalletStep,
     setLoginStep,
-    resetWalletCreate, 
+    resetWalletCreate,
+    setMintData,
+  resetMintData, 
 } = layoutSlice.actions;

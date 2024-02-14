@@ -10,7 +10,7 @@ export const loggedInItemsDetails = [
     },
     {
       item: "Mint Artwork",
-      link: "/mint-artwork",
+      link: "/mint",
     },
     {
       item: "Crypto Transfer",

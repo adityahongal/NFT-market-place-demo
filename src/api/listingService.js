@@ -33,3 +33,21 @@ export const useGetListingById = ({ tokenId = "", tokenAddress = "" }) => {
 
   return { data: data?.data?.Listing || {}, isLoading };
 };
+
+export const useGetMinterAddress = () => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["get-miner-address"],
+    queryFn: () => api.get("/getMinter"),
+  });
+
+  return { minterAddress: data?.data?.minter, isLoading, isError };
+};
+
+export const useGetRoyaltyAddress = () => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["get-royalty-address"],
+    queryFn: () => api.get("/getRoyaltyReceiver"),
+  });
+
+  return { royaltyReceiverAddress: data?.data?.royaltyReceiver, isLoading, isError };
+};

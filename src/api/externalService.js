@@ -72,3 +72,9 @@ export const useGetNativeBalance = () => {
 
   return { getNativeBalance: mutateAsync, data: data?.data };
 };
+
+export const signSmartContractDataApi = async (body) => {
+  const { data } = await api.post(`/getSignedData`, body);
+
+  return data?.signedData || body;
+};

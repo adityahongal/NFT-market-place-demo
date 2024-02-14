@@ -126,6 +126,26 @@ const publicRoutes = [
     Component: lazy(() => import("./../Pages/TransferMatic")),
     pageTitle: "Transfer Crypto",
   },
+  {
+    path: "/mint",
+    Component: lazy(() => import("./../Pages/MintArtwork")),
+    pageTitle: "Mint Artwork",
+  },
+  {
+    path: "/mint/:imageHash",
+    Component: lazy(() => import("./../Pages/MintArtwork")),
+    pageTitle: "Mint Artwork",
+  },
+  {
+    path: "/recharge",
+    Component: lazy(() => import("./../Pages/Recharge")),
+    pageTitle: "Recharge",
+  },
+  {
+    path: "/success",
+    Component: lazy(() => import("./../Pages/SuccessPage")),
+    pageTitle: "Success",
+  },
 ];
 
 export default AppRoutes;
