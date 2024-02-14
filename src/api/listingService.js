@@ -34,6 +34,34 @@ export const useGetListingById = ({ tokenId = "", tokenAddress = "" }) => {
   return { data: data?.data?.Listing || {}, isLoading };
 };
 
+export const useUpdateListing = ({ handleOnFinish = () => {}, tokenId = "", tokenAddress = "" }) => {
+  const { isLoading, isError, mutate } = useMutation(["update-listing"], (body) => api.put("/updateListing", body), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["get-listing-by-id", tokenId, tokenAddress]);
+      queryClient.invalidateQueries(["get-user-listings", 0]);
+      handleOnFinish();
+    },
+  });
+
+  return { isLoading, isError, mutate };
+};
+
+export const useDeleteListing = ({ handleOnFinish = () => {}, tokenId = "", tokenAddress = "" }) => {
+  const { isLoading, isError, mutate } = useMutation(
+    ["delete-listing"],
+    (listingId) => api.delete(`/cancelListing/${listingId}`),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["get-listing-by-id", tokenId, tokenAddress]);
+        queryClient.invalidateQueries(["get-user-listings", 0]);
+        handleOnFinish();
+      },
+    }
+  );
+
+  return { isLoading, isError, mutate };
+};
+
 export const useGetMinterAddress = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["get-miner-address"],
@@ -50,4 +78,25 @@ export const useGetRoyaltyAddress = () => {
   });
 
   return { royaltyReceiverAddress: data?.data?.royaltyReceiver, isLoading, isError };
+};
+
+export const useListNftForSale = (handleOnFinish = () => {}) => {
+  const { isLoading, isError, mutate } = useMutation(
+    ["list-nft-for-sale"],
+    (body) => api.post("/listNFTForSale", body),
+    {
+      onSuccess: handleOnFinish,
+    }
+  );
+
+  return { isLoading, isError, mutate };
+};
+
+export const useGetMarketplaceAddress = () => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["get-marketplace-address"],
+    queryFn: () => api.get("/getMarketplaceAddress"),
+  });
+
+  return { marketplaceAddress: data?.data?.marketplaceAddress, isLoading, isError };
 };

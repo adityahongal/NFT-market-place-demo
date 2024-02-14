@@ -7,6 +7,8 @@ import { FiShare2 } from "react-icons/fi";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
+import { layoutStateSelector, resetNftTask } from "./../store/slices/layout";
+
 import { ShareArtworkModal } from "./../components/Common";
 import {
   useGetNftMetadata,
@@ -14,13 +16,18 @@ import {
 } from "./../api/externalService";
 import { useGetUserByAddressDelay } from "./../api/userService";
 import { getCustomGatewayUrl } from "./../utils/misc";
-import { Landing } from "../components/ArtworkPage";
+import {
+  GiftNft,
+  Landing,
+  SellNft,
+  RemintNft,
+} from "../components/ArtworkPage";
 
 const ArtWorkPage = () => {
   const navigate = useNavigate();
-  
+  const dispatch = useDispatch();
   const location = useLocation();
-
+  const { nftTask } = useSelector(layoutStateSelector);
   const { contractAddress = "", tokenId = "" } = useParams();
   const { data: nftMeta } = useGetNftMetadata({
     tokenAddress: contractAddress,
@@ -29,7 +36,8 @@ const ArtWorkPage = () => {
   });
   const [isDetailsLoading, setIsDetailsLoading] = useBoolean(true);
   const [nftDetails, setNftDetails] = useState({});
-  console.log(nftDetails)
+  const nftListedSuccessText = "NFT Listed Successfully"; 
+  const nftTransferSuccessText = "NFT Transferred Successfully";
 
   const {
     isOpen: isShareModalOpen,
@@ -37,6 +45,11 @@ const ArtWorkPage = () => {
     onOpen: onShareModalOpen,
   } = useDisclosure();
   const { mutateAsync: getUserDetails } = useGetUserByAddressDelay();
+
+  const { giftNftStep = 0, sellNftStep = 0, remintNftStep = 0 } = nftTask;
+
+  const isInitialStep =
+    giftNftStep === 0 && sellNftStep === 0 && remintNftStep === 0;
 
   const getNftDetails = async () => {
     try {
@@ -87,11 +100,70 @@ const ArtWorkPage = () => {
     }
   };
 
-   console.log(isDetailsLoading)
+  const getGiftNftComponent = () => {
+    switch (giftNftStep) {
+      case 1:
+        return <GiftNft nftDetails={nftDetails} />;
+      case 2:
+        navigate("/success", {
+          state: {
+            headerText: nftTransferSuccessText,
+            redirectTo: "/profile",
+            timeout: 2500,
+          },
+        });
+        return <></>;
+      default:
+        return <></>;
+    }
+  };
+
+  const getSellComponent = () => {
+    switch (sellNftStep) {
+      case 1:
+        return <SellNft nftDetails={nftDetails} />;
+      case 2:
+        navigate("/success", {
+          state: {
+            headerText: nftListedSuccessText,
+            redirectTo: "/profile",
+            timeout: 2500,
+          },
+        });
+        return <></>;
+      default:
+        return <></>;
+    }
+  };
+
+  const getRemintComponent = () => {
+    switch (remintNftStep) {
+      case 1:
+        return <RemintNft nftDetails={nftDetails} />;
+      case 2:
+        navigate("/success", {
+          state: {
+            headerText: "Artwork minted successfully!",
+            shouldRedirect: false,
+            ctaText: "Show me my NFTs",
+            redirectTo: "/profile",
+          },
+        });
+        return <></>;
+      default:
+        return <></>;
+    }
+  };
+  
   useEffect(() => {
     if (contractAddress && tokenId && nftMeta) getNftDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractAddress, tokenId, nftMeta]);
+
+  useEffect(() => {
+    dispatch(resetNftTask());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box w={"full"} flex={1}>
@@ -100,7 +172,7 @@ const ArtWorkPage = () => {
           isOpen={isShareModalOpen}
           onClose={onShareModalClose}
           shareUrl={`${window?.location?.href}`}
-          captionText={"Checkout this Artwork on Miko NFT!!! 🎉"}
+          captionText={"Checkout this Artwork on NFT Market!!! 🎉"}
           copyUrl={
             `${window?.location?.host || ""}${location.pathname.slice(
               0,
@@ -196,7 +268,10 @@ const ArtWorkPage = () => {
                   w="full"
                 />
               </Box>
-              <Landing nftDetails={nftDetails}/>
+              {isInitialStep && <Landing nftDetails={nftDetails} />}
+              {getGiftNftComponent()}
+              {getSellComponent()}
+              {getRemintComponent()}
             </Stack>
           </Stack>
         )}

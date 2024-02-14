@@ -683,3 +683,613 @@ export const mint721Artwork =
     }
   };
 
+  export const transfer721NFT =
+  ({
+    NFT,
+    transferAddress,
+    wallet,
+    navigate,
+    originUrl,
+    getNativeBalance,
+    handleClose = () => {},
+  }) =>
+  async (dispatch) => {
+    try {
+      const { data: balanceResponse } = await getNativeBalance({
+        chain: process.env.REACT_APP_MORALIS_CHAIN_NAME,
+        address: wallet.address,
+      });
+      const { balance } = balanceResponse;
+      const currentUserMaticBalance = ethers.utils.formatEther(balance);
+      const MaticPriceInUSD = await getMaticPrice();
+
+      const ERC721ContractInstance = new ethers.Contract(
+        NFT.contract_address,
+        ERC721.abi,
+        wallet
+      );
+
+      const approvalGasEstimate =
+        await ERC721ContractInstance.estimateGas.approve(
+          transferAddress,
+          NFT.tokenId
+        );
+      const formattedApprovalGasEstimate =
+        ethers.utils.formatEther(approvalGasEstimate);
+      const inflatedApprovalGasEstimate = inflateGasPrice(
+        formattedApprovalGasEstimate
+      );
+      if (
+        Number(inflatedApprovalGasEstimate) > Number(currentUserMaticBalance) ||
+        Number(currentUserMaticBalance).toFixed(2) === "0.00"
+      ) {
+        navigate("/recharge", {
+          state: {
+            redirectedFrom: originUrl,
+            rechargeAmt: getRechargeAmt(
+              inflatedApprovalGasEstimate,
+              MaticPriceInUSD
+            ),
+          },
+        });
+      }
+
+      const approvalForTransfer = await ERC721ContractInstance.approve(
+        transferAddress,
+        NFT.tokenId
+      );
+      await approvalForTransfer.wait();
+
+      const trasferGasEstimate =
+        await ERC721ContractInstance.estimateGas.transferFrom(
+          wallet.address,
+          transferAddress,
+          NFT.tokenId
+        );
+      const formattedTransferGasEstimate =
+        ethers.utils.formatEther(trasferGasEstimate);
+      const inflatedTransferGasEstimate = inflateGasPrice(
+        formattedTransferGasEstimate
+      );
+      if (
+        Number(inflatedTransferGasEstimate) > Number(currentUserMaticBalance) ||
+        Number(currentUserMaticBalance).toFixed(2) === "0.00"
+      ) {
+        navigate("/recharge", {
+          state: {
+            redirectedFrom: originUrl,
+            rechargeAmt: getRechargeAmt(
+              inflatedTransferGasEstimate,
+              MaticPriceInUSD
+            ),
+          },
+        });
+      }
+
+      const transferResponse = await ERC721ContractInstance.transferFrom(
+        wallet.address,
+        transferAddress,
+        NFT.tokenId
+      );
+      await transferResponse.wait();
+
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+export const transfer1155NFT =
+  ({
+    NFT,
+    transferAddress,
+    wallet,
+    getNativeBalance,
+    navigate,
+    originUrl,
+    handleClose = () => {},
+  }) =>
+  async (dispatch) => {
+    try {
+      const { data: balanceResponse } = await getNativeBalance({
+        chain: process.env.REACT_APP_MORALIS_CHAIN_NAME,
+        address: wallet.address,
+      });
+      const { balance } = balanceResponse;
+      const currentUserMaticBalance = ethers.utils.formatEther(balance);
+      const MaticPriceInUSD = await getMaticPrice();
+
+      const ERC1155ContractInstance = await new ethers.Contract(
+        NFT.contract_address,
+        ERC1155.abi,
+        wallet
+      );
+
+      const trasferGasEstimate =
+        await ERC1155ContractInstance.estimateGas.safeTransferFrom(
+          wallet.address,
+          transferAddress,
+          NFT.tokenId,
+          NFT.quantity,
+          "0x"
+        );
+      const formattedTransferGasEstimate =
+        ethers.utils.formatEther(trasferGasEstimate);
+      const inflatedTransferGasEstimate = inflateGasPrice(
+        formattedTransferGasEstimate
+      );
+      if (
+        Number(inflatedTransferGasEstimate) > Number(currentUserMaticBalance) ||
+        Number(currentUserMaticBalance).toFixed(2) === "0.00"
+      ) {
+        navigate("/recharge", {
+          state: {
+            redirectedFrom: originUrl,
+            rechargeAmt: getRechargeAmt(
+              inflatedTransferGasEstimate,
+              MaticPriceInUSD
+            ),
+          },
+        });
+      }
+
+      const transferResponse = await ERC1155ContractInstance.safeTransferFrom(
+        wallet.address,
+        transferAddress,
+        NFT.tokenId,
+        NFT.quantity,
+        "0x"
+      );
+      await transferResponse.wait();
+
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  export const ListNFTForSale =
+  ({
+    NFT,
+    listingPrice,
+    wallet,
+    navigate,
+    originUrl,
+    handleNftListing,
+    getNativeBalance,
+    marketplaceAddress,
+  }) =>
+  async (dispatch) => {
+    try {
+      if (!marketplaceAddress) {
+        throw new Error("Marketplace contract not found");
+      }
+      const { data: balanceResponse } = await getNativeBalance({
+        chain: process.env.REACT_APP_MORALIS_CHAIN_NAME,
+        address: wallet.address,
+      });
+      const { balance } = balanceResponse;
+      const currentUserMaticBalance = ethers.utils.formatEther(balance);
+      const MaticPriceInUSD = await getMaticPrice();
+
+      const tokenType = NFT.token_standard === "ERC721" ? 0 : 1;
+
+      if (tokenType === 0) {
+        const ERC721ContractInstance = new ethers.Contract(
+          NFT.contract_address,
+          ERC721.abi,
+          wallet
+        );
+
+        const approvalGasEstimate =
+          await ERC721ContractInstance.estimateGas.approve(
+            marketplaceAddress,
+            NFT.tokenId
+          );
+        const formattedApprovalGasEstimate =
+          ethers.utils.formatEther(approvalGasEstimate);
+        const inflatedApprovalGasEstimate = inflateGasPrice(
+          formattedApprovalGasEstimate
+        );
+        if (
+          Number(inflatedApprovalGasEstimate) >
+            Number(currentUserMaticBalance) ||
+          Number(currentUserMaticBalance).toFixed(2) === "0.00"
+        ) {
+          navigate("/recharge", {
+            state: {
+              redirectedFrom: originUrl,
+              rechargeAmt: getRechargeAmt(
+                inflatedApprovalGasEstimate,
+                MaticPriceInUSD
+              ),
+            },
+          });
+        }
+
+        const approvalForTransferForSale = await ERC721ContractInstance.approve(
+          marketplaceAddress,
+          NFT.tokenId
+        );
+        await approvalForTransferForSale.wait();
+      } else {
+        const ERC1155ContractInstance = await new ethers.Contract(
+          NFT.contract_address,
+          ERC1155.abi,
+          wallet
+        );
+
+        const approvalGasEstimate =
+          await ERC1155ContractInstance.estimateGas.setApprovalForAll(
+            marketplaceAddress,
+            true
+          );
+        const formattedApprovalGasEstimate =
+          ethers.utils.formatEther(approvalGasEstimate);
+        const inflatedApprovalGasEstimate = inflateGasPrice(
+          formattedApprovalGasEstimate
+        );
+        if (
+          Number(inflatedApprovalGasEstimate) >
+            Number(currentUserMaticBalance) ||
+          Number(currentUserMaticBalance).toFixed(2) === "0.00"
+        ) {
+          navigate("/recharge", {
+            state: {
+              redirectedFrom: originUrl,
+              rechargeAmt: getRechargeAmt(
+                inflatedApprovalGasEstimate,
+                MaticPriceInUSD
+              ),
+            },
+          });
+        }
+
+        const approvalForTransferForSale =
+          await ERC1155ContractInstance.setApprovalForAll(
+            marketplaceAddress,
+            true
+          );
+        await approvalForTransferForSale.wait();
+      }
+
+      const MikoMarketPlaceInstance = new ethers.Contract(
+        marketplaceAddress,
+        MikoMarketPlace.abi,
+        wallet
+      );
+
+      const listItemGasEstimate =
+        await MikoMarketPlaceInstance.estimateGas.listItem(
+          NFT.contract_address,
+          Number(NFT.tokenId),
+          ethers.utils.parseEther(listingPrice), //min 1.4
+          tokenType
+        );
+      console.log(listItemGasEstimate);
+      const formattedListItemGasEstimate =
+        ethers.utils.formatEther(listItemGasEstimate);
+      const inflatedListItemGasEstimate = inflateGasPrice(
+        formattedListItemGasEstimate
+      );
+      if (
+        Number(inflatedListItemGasEstimate) > Number(currentUserMaticBalance) ||
+        Number(currentUserMaticBalance).toFixed(2) === "0.00"
+      ) {
+        navigate("/recharge", {
+          state: {
+            redirectedFrom: originUrl,
+            rechargeAmt: getRechargeAmt(
+              inflatedListItemGasEstimate,
+              MaticPriceInUSD
+            ),
+          },
+        });
+      }
+
+      const ListingResponse = await MikoMarketPlaceInstance.listItem(
+        NFT.contract_address,
+        Number(NFT.tokenId),
+        ethers.utils.parseEther(listingPrice),
+        tokenType
+      );
+
+      await ListingResponse.wait();
+
+      const listingPayload = {
+        seller: wallet.address.toLowerCase(),
+        tokenAddress: NFT.contract_address.toLowerCase(),
+        tokenId: String(NFT.tokenId),
+        price: listingPrice,
+        status: "active",
+      };
+
+      handleNftListing(listingPayload);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+export const EditNFTOnSale =
+  ({
+    NFT,
+    updatedPrice,
+    wallet,
+    navigate,
+    originUrl,
+    marketplaceAddress,
+    updateListing,
+    getNativeBalance,
+  }) =>
+  async (dispatch) => {
+    try {
+      if (!marketplaceAddress) {
+        throw new Error("Marketplace contract not found");
+      }
+      const { data: balanceResponse } = await getNativeBalance({
+        chain: process.env.REACT_APP_MORALIS_CHAIN_NAME,
+        address: wallet.address,
+      });
+      const { balance } = balanceResponse;
+      const currentUserMaticBalance = ethers.utils.formatEther(balance);
+      const MaticPriceInUSD = await getMaticPrice();
+
+      const MikoMarketPlaceInstance = await new ethers.Contract(
+        marketplaceAddress,
+        MikoMarketPlace.abi,
+        wallet
+      );
+      const tokenType = NFT.token_standard === "ERC721" ? 0 : 1;
+
+      // Gas estimate for update listing
+      const updateListingGasEstimate =
+        await MikoMarketPlaceInstance.estimateGas.updateListing(
+          NFT.contract_address,
+          Number(NFT.tokenId),
+          ethers.utils.parseEther(updatedPrice),
+          tokenType
+        );
+      const formattedUpdateListingGasEstimate = ethers.utils.formatEther(
+        updateListingGasEstimate
+      );
+      const inflatedUpdateListingGasEstimate = inflateGasPrice(
+        formattedUpdateListingGasEstimate
+      );
+      if (
+        Number(inflatedUpdateListingGasEstimate) >
+          Number(currentUserMaticBalance) ||
+        Number(currentUserMaticBalance).toFixed(2) === "0.00"
+      ) {
+        navigate("/recharge", {
+          state: {
+            redirectedFrom: originUrl,
+            rechargeAmt: getRechargeAmt(
+              inflatedUpdateListingGasEstimate,
+              MaticPriceInUSD
+            ),
+          },
+        });
+      }
+
+      const updateResponse = await MikoMarketPlaceInstance.updateListing(
+        NFT.contract_address,
+        Number(NFT.tokenId),
+        ethers.utils.parseEther(updatedPrice),
+        tokenType
+      );
+      await updateResponse.wait();
+
+      const updatePayload = {
+        seller: NFT.seller,
+        id: NFT.id,
+        price: String(updatedPrice),
+      };
+
+      updateListing(updatePayload);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+export const CancelNFTSaleListing =
+  ({
+    NFT,
+    wallet,
+    navigate,
+    originUrl,
+    marketplaceAddress,
+    deleteListing,
+    getNativeBalance,
+  }) =>
+  async (dispatch) => {
+    try {
+      if (!marketplaceAddress) {
+        throw new Error("Marketplace contract not found");
+      }
+      const { data: balanceResponse } = await getNativeBalance({
+        chain: process.env.REACT_APP_MORALIS_CHAIN_NAME,
+        address: wallet.address,
+      });
+      const { balance } = balanceResponse;
+      const currentUserMaticBalance = ethers.utils.formatEther(balance);
+      const MaticPriceInUSD = await getMaticPrice();
+
+      const MikoMarketPlaceInstance = await new ethers.Contract(
+        marketplaceAddress,
+        MikoMarketPlace.abi,
+        wallet
+      );
+      const tokenType = NFT.token_standard === "ERC721" ? 0 : 1;
+
+      // Gas estimate for cancel listing
+      const cancelListingGasEstimate =
+        await MikoMarketPlaceInstance.estimateGas.cancelListing(
+          NFT.contract_address,
+          NFT.tokenId,
+          tokenType
+        );
+      const formattedCancelListingGasEstimate = ethers.utils.formatEther(
+        cancelListingGasEstimate
+      );
+      const inflatedCancelListingGasEstimate = inflateGasPrice(
+        formattedCancelListingGasEstimate
+      );
+      if (
+        Number(inflatedCancelListingGasEstimate) >
+          Number(currentUserMaticBalance) ||
+        Number(currentUserMaticBalance).toFixed(2) === "0.00"
+      ) {
+        navigate("/recharge", {
+          state: {
+            redirectedFrom: originUrl,
+            rechargeAmt: getRechargeAmt(
+              inflatedCancelListingGasEstimate,
+              MaticPriceInUSD
+            ),
+          },
+        });
+      }
+
+      const cancelResponse = await MikoMarketPlaceInstance.cancelListing(
+        NFT.contract_address,
+        NFT.tokenId,
+        tokenType
+      );
+
+      await cancelResponse.wait();
+
+      deleteListing(NFT.id);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  export const buyNFT =
+  ({ NFT, wallet, navigate, marketplaceAddress }) =>
+  async (dispatch) => {
+    try {
+      if (!marketplaceAddress) {
+        throw new Error("Marketplace contract not found");
+      }
+
+      let getRoyaltiesResponse = null;
+      const tokenType = NFT.token_standard === "ERC721" ? 0 : 1;
+
+      if (tokenType === 0) {
+        const ERC721ContractInstance = await new ethers.Contract(
+          NFT.contract_address,
+          ERC721.abi,
+          wallet
+        );
+
+        getRoyaltiesResponse = await ERC721ContractInstance.royaltyInfo(
+          NFT.tokenId,
+          ethers.utils.parseEther(NFT?.price)
+        );
+      } else {
+        const ERC1155ContractInstance = await new ethers.Contract(
+          NFT.contract_address,
+          ERC1155.abi,
+          wallet
+        );
+
+        getRoyaltiesResponse = await ERC1155ContractInstance.royaltyInfo(
+          NFT.tokenId,
+          ethers.utils.parseEther(NFT?.price)
+        );
+      }
+
+      const totalpayable =
+        parseFloat(
+          ethers.utils.formatEther(`${getRoyaltiesResponse.royaltyAmount}`)
+        ) + parseFloat(NFT?.price);
+
+      // Encoded ABI
+      const web3Js = new Web3(wallet.provider);
+      const testScInputData = web3Js.eth.abi.encodeFunctionCall(
+        {
+          name: "buyItem",
+          type: "function",
+          inputs: [
+            {
+              internalType: "address",
+              name: "nftAddress",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenType",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "tokenReceiver",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "royaltyReceiver",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "royaltyAmount",
+              type: "uint256",
+            },
+          ],
+        },
+        [
+          NFT.contract_address,
+          NFT.tokenId,
+          tokenType,
+          wallet.address,
+          getRoyaltiesResponse.receiver,
+          `${getRoyaltiesResponse.royaltyAmount}`,
+        ]
+      );
+
+      let signedData = {};
+      const signedUid = uuidv4();
+      const privateKey =
+        "0x57466afb5491ee372b3b30d82ef7e7a0583c9e36aef0f02435bd164fe172b1d3";
+      if (process.env.REACT_APP_CHAIN_ID === "80001") {
+        signedData = signSmartContractData(
+          {
+            address: wallet.address,
+            commodity: "MATIC",
+            commodity_amount: Math.ceil(Number(totalpayable)),
+            network: "mumbai",
+            sc_address: marketplaceAddress,
+            sc_input_data: testScInputData, // scInputData,
+          },
+          privateKey
+        );
+      } else if (process.env.REACT_APP_CHAIN_ID === "137") {
+        signedData = await signSmartContractDataApi({
+          address: wallet.address,
+          commodity: "MATIC",
+          commodity_amount: Math.ceil(Number(totalpayable)),
+          sc_address: marketplaceAddress,
+          sc_id: signedUid, // must be unique for any request
+          sc_input_data: testScInputData, // scInputData,
+        });
+      }
+
+      navigate("/checkout", {
+        state: {
+          NFT,
+          signedData,
+          sc_address: marketplaceAddress,
+          sc_input_data: testScInputData,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+

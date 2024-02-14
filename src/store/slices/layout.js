@@ -7,6 +7,12 @@ const initialState = {
     existingWalletStep: 0,
     loginStep: 0,
   },
+  nftTask: {
+    currentContext: "",
+    giftNftStep: 0,
+    sellNftStep: 0,
+    remintNftStep: 0,
+  },
   mintData: {
     quantity: 1,
     name: "",
@@ -35,6 +41,18 @@ export const layoutSlice = createSlice({
     resetWalletCreate: (state, action) => {
       state.walletCreate = initialState.walletCreate;
     },
+    setGiftNftStep: (state, action) => {
+      state.nftTask.giftNftStep = action.payload;
+    },
+    setSellNftStep: (state, action) => {
+      state.nftTask.sellNftStep = action.payload;
+    },
+    setRemintNftStep: (state, action) => {
+      state.nftTask.remintNftStep = action.payload;
+    },
+    resetNftTask: (state, action) => {
+      state.nftTask = initialState.nftTask;
+    },
     setMintData: (state, action) => {
       state.mintData = { ...state.mintData, ...action.payload };
     },
@@ -50,12 +68,16 @@ export const mintDataSelector = (state) => state.layout.mintData;
 
 export const reducer = layoutSlice.reducer;
 
-export const { 
-    setCreateWalletStep, 
-    setCurrentContext,
-    setExistingWalletStep,
-    setLoginStep,
-    resetWalletCreate,
-    setMintData,
-  resetMintData, 
+export const {
+  resetWalletCreate,
+  setCreateWalletStep,
+  setCurrentContext,
+  setExistingWalletStep,
+  setLoginStep,
+  resetNftTask,
+  setGiftNftStep,
+  setSellNftStep,
+  setRemintNftStep,
+  setMintData,
+  resetMintData,
 } = layoutSlice.actions;
