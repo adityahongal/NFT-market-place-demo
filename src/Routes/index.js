@@ -156,6 +156,11 @@ const publicRoutes = [
     Component: lazy(() => import("./../Pages/ConnectedDapps")),
     pageTitle: "Connect Dapps",
   },
+  {
+    path: "*",
+    Component: lazy(() => import("./../Pages/NotFound")),
+    pageTitle: "Not Found",
+  },
 ];
 
 export default AppRoutes;
