@@ -18,7 +18,7 @@ export const loggedInItemsDetails = [
     },
     {
       item: "Connected D-apps",
-      link: "/connected-apps",
+      link: "/connectedDapps",
     },
   ];
   

@@ -14,7 +14,9 @@ const methods = [
 
 const chains = [
     "eip155:80001",
-    "eip155:137"
+    "eip155:137",
+    "eip155:11155111",
+    "eip155:1"
 ];
 
 export async function createWeb3Wallet(relayerRegionURL, uri) {
@@ -54,6 +56,8 @@ export function getApprovedNamespaces(params, address) {
             accounts: [
                 `eip155:80001:${address}`,
                 `eip155:137:${address}`,
+                `eip155:11155111:${address}`,
+                `eip155:1:${address}`
             ]
           }
         }

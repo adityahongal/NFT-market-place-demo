@@ -71,13 +71,41 @@ const slice = createSlice({
       const { walletExists } = action.payload;
       state.walletExists = walletExists;
     },
+    setLoggedIn(state, action) {
+      const { loggedIn } = action.payload;
+      state.loggedIn = loggedIn;
+    },
+    setBalances(state, action) {
+      const { Balances } = action.payload;
+      state.balances = Balances;
+    },
     setLoading(state, action) {
       const { loading } = action.payload;
       state.loading = loading;
     },
-    setLoggedIn(state, action) {
-      const { loggedIn } = action.payload;
-      state.loggedIn = loggedIn;
+    setConnectors(state, action) {
+      const { connector } = action.payload;
+      state.connector = connector;
+    },
+    setRequests(state, action) {
+      const { requests } = action.payload;
+      if(!state.requests.find((req) => req.id === requests.requests.id)) {
+        state.requests.push(requests.requests);
+      }
+    },
+    removeRequest(state, action) {
+      const { request } = action.payload;
+
+      state.requests = state.requests.filter((req) => req?.id !== request?.id);
+    },
+    setURI(state, action) {
+      const { uri } = action.payload;
+      state.uri = uri;
+    },
+    setConnected(state, action) {
+      const { connected, dappDetails } = action.payload;
+      state.connectedDApp = dappDetails;
+      state.connected = connected;
     },
   },
 });
@@ -87,6 +115,19 @@ export const reducer = slice.reducer;
 export const { setReEnteredSeedPhrase } = slice.actions;
 
 // Actions and web3 functions
+
+export const setRequests = (request) => (dispatch) => {
+  console.log(request)
+  dispatch(slice.actions.setRequests({ requests: request }));
+};
+
+export const setURI = (uri) => (dispatch) => {
+  dispatch(slice.actions.setURI({ uri: uri }));
+};
+
+export const setConnectedDApp = (connected, dappDetails) => (dispatch) => {
+  dispatch(slice.actions.setConnected({ connected, dappDetails }));
+};
 
 export const createWallet =
   (onComplete = () => {}) =>
@@ -117,6 +158,40 @@ const savePvtKeyToLocalStorage = (pvtKey) => {
   );
 };
 
+export const setWallet =
+  ({ seedPhrase, password, createUser = () => {}, onComplete = () => {} }) =>
+  async (dispatch) => {
+    try {
+      let wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+
+      savePvtKeyToLocalStorage(wallet.privateKey);
+
+      const encryptedWallet = await wallet.encrypt(password);
+      localStorage.setItem("wallet", JSON.stringify(encryptedWallet));
+      const provider = new ethers.providers.InfuraProvider(
+        process.env.REACT_APP_INFURA_CHAIN_NAME,
+        process.env.REACT_APP_INFURA_PROVIDER_ID
+      );
+      wallet = wallet.connect(provider);
+
+      const accountDeatils = {
+        address: wallet.address.toLowerCase(),
+        name: "Enter name",
+        avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${wallet?.address}`,
+        background_image:
+          "https://images.unsplash.com/photo-1642370324100-324b21fab3a9?w=500",
+      };
+
+      createUser(accountDeatils);
+
+      dispatch(updateUser({ address: wallet.address.toLowerCase() }));
+
+      dispatch(slice.actions.setWallet({ wallet }));
+      dispatch(slice.actions.setLoggedIn({ loggedIn: true }));
+      onComplete();
+    } catch (error) {}
+  };
+
 export const setWalletFromPvtKey =
   ({ pvtKey, mutate }) =>
   async (dispatch) => {
@@ -138,6 +213,17 @@ export const setWalletFromPvtKey =
     }
     dispatch(slice.actions.setLoading({ loading: false }));
   };
+
+export const checkWalletExistsLocally = () => async (dispatch) => {
+  const encryptedWallet = localStorage.getItem("wallet");
+  const parsedWallet = JSON.parse(encryptedWallet);
+
+  if (parsedWallet !== undefined && parsedWallet !== null) {
+    dispatch(slice.actions.setWalletExists({ walletExists: true }));
+  } else {
+    dispatch(slice.actions.setWalletExists({ walletExists: false }));
+  }
+};
 
 export const login =
   ({ password, mutate, onSuccess = () => {}, onError = () => {} }) =>
@@ -172,53 +258,6 @@ export const login =
     } catch (err) {
       console.log(err);
       onError();
-    }
-  };
-
-export const checkWalletExistsLocally = () => async (dispatch) => {
-  const encryptedWallet = localStorage.getItem("wallet");
-  const parsedWallet = JSON.parse(encryptedWallet);
-
-  if (parsedWallet !== undefined && parsedWallet !== null) {
-    dispatch(slice.actions.setWalletExists({ walletExists: true }));
-  } else {
-    dispatch(slice.actions.setWalletExists({ walletExists: false }));
-  }
-};
-
-export const setWallet =
-  ({ seedPhrase, password, createUser = () => {}, onComplete = () => {} }) =>
-  async (dispatch) => {
-    try {
-      let wallet = ethers.Wallet.fromMnemonic(seedPhrase);
-
-      savePvtKeyToLocalStorage(wallet.privateKey);
-
-      const encryptedWallet = await wallet.encrypt(password);
-      localStorage.setItem("wallet", JSON.stringify(encryptedWallet));
-      const provider = new ethers.providers.InfuraProvider(
-        process.env.REACT_APP_INFURA_CHAIN_NAME,
-        process.env.REACT_APP_INFURA_PROVIDER_ID
-      );
-      wallet = wallet.connect(provider);
-
-      const accountDeatils = {
-        address: wallet.address.toLowerCase(),
-        name: "Enter name",
-        avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${wallet?.address}`,
-        background_image:
-          "https://images.unsplash.com/photo-1642370324100-324b21fab3a9?w=500",
-      };
-
-      createUser(accountDeatils);
-
-      dispatch(updateUser({ address: wallet.address.toLowerCase() }));
-
-      dispatch(slice.actions.setWallet({ wallet }));
-      dispatch(slice.actions.setLoggedIn({ loggedIn: true }));
-      onComplete();
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -272,10 +311,9 @@ export const mint721Artwork =
           miko_id,
         });
       }
-      console.log(userDetails);
 
       // Deploy ERC721Contract for particular user and check if already exists
-      let contractAddress = userDetails?.erc721_address;
+      let contractAddress = userDetails.erc721_address;
 
       if (!contractAddress) {
         const ERC721Factory = new ethers.ContractFactory(
@@ -442,7 +480,7 @@ export const mint721Artwork =
     }
   };
 
-  export const mint1155Artwork =
+export const mint1155Artwork =
   ({
     artwork = {},
     wallet,
@@ -479,7 +517,6 @@ export const mint721Artwork =
 
       if (!userDetails?.miko_id && miko_id) {
         updateUserDetails({
-          id: userDetails.id,
           address: userDetails.address,
           miko_id,
         });
@@ -683,7 +720,7 @@ export const mint721Artwork =
     }
   };
 
-  export const transfer721NFT =
+export const transfer721NFT =
   ({
     NFT,
     transferAddress,
@@ -848,7 +885,7 @@ export const transfer1155NFT =
     }
   };
 
-  export const ListNFTForSale =
+export const ListNFTForSale =
   ({
     NFT,
     listingPrice,
@@ -1164,7 +1201,7 @@ export const CancelNFTSaleListing =
     }
   };
 
-  export const buyNFT =
+export const buyNFT =
   ({ NFT, wallet, navigate, marketplaceAddress }) =>
   async (dispatch) => {
     try {
@@ -1293,3 +1330,223 @@ export const CancelNFTSaleListing =
     }
   };
 
+export const initWalletConnect = (uri) => async (dispatch) => {
+  try {
+    await web3wallet.pair({ uri });
+  } catch (err) {
+    throw err.message;
+  }
+};
+
+export const disconnectFromDapp = () => async (dispatch) => {
+  try {
+    const topic = window.localStorage.getItem("WalletConnectConnectedAppId");
+
+    if (topic) {
+      console.log("session loggedout");
+      await window.localStorage.removeItem("WalletConnectConnectedAppId");
+      dispatch(setConnectedDApp(false, {}));
+      await web3wallet.disconnectSession({
+        topic,
+        reason: getSdkError("USER_DISCONNECTED"),
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const approveRequest =
+  (connector, financingWalletAddress, request) => async (dispatch) => {
+    try {
+      await connector.approveSession({
+        chainId: process.env.REACT_APP_CHAIN_ID,
+        accounts: [`${financingWalletAddress}`],
+      });
+      dispatch(slice.actions.removeRequest({ request: request }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+export const rejectRequest = (connector, request) => async (dispatch) => {
+  try {
+    await connector.rejectSession({ message: "User Rejected" });
+    dispatch(slice.actions.removeRequest({ request: request }));
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const rejectActiveRequest = (connector, request) => async (dispatch) => {
+  try {
+    dispatch(
+      slice.actions.removeRequest({
+        request: request,
+      })
+    );
+    const response = {
+      id: request?.id,
+      jsonrpc: "2.0",
+      error: {
+        code: 5000,
+        message: "User rejected.",
+      },
+    };
+    await web3wallet.respondSessionRequest({ topic: request?.topic, response });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const handlePersonalSign =
+  (request, wallet, connector) => async (dispatch) => {
+    try {
+      const message = request?.params?.request?.params[0];
+
+      const signature = await wallet.signMessage(
+        ethers.utils.isHexString(message)
+          ? ethers.utils.arrayify(message)
+          : message
+      );
+      const response = { id: request?.id, result: signature, jsonrpc: "2.0" };
+
+      await web3wallet.respondSessionRequest({
+        topic: request?.topic,
+        response,
+      });
+
+      dispatch(
+        slice.actions.removeRequest({
+          request: request,
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  };
+
+export const handleETHSign =
+  (request, wallet, connector) => async (dispatch) => {
+    try {
+      const message = request?.params?.request?.params[1];
+
+      const signature = await wallet.signMessage(
+        ethers.utils.isHexString(message)
+          ? ethers.utils.arrayify(message)
+          : message
+      );
+      const response = { id: request?.id, result: signature, jsonrpc: "2.0" };
+
+      await web3wallet.respondSessionRequest({
+        topic: request?.topic,
+        response,
+      });
+
+      dispatch(
+        slice.actions.removeRequest({
+          request: request,
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  };
+
+export const handleSignTypedData =
+  (request, wallet, connector, data) => async (dispatch) => {
+    try {
+      const result = signTypedData_v4(
+        Buffer.from(wallet.privateKey.slice(2), "hex"),
+        {
+          data: data,
+        }
+      );
+
+      const response = { id: request?.id, result: result, jsonrpc: "2.0" };
+
+      await web3wallet.respondSessionRequest({
+        topic: request?.topic,
+        response,
+      });
+
+      dispatch(
+        slice.actions.removeRequest({
+          request: request,
+        })
+      );
+    } catch (err) {
+      throw err;
+    }
+  };
+
+export const handleETHSignTransaction =
+  (request, wallet, connector) => async (dispatch) => {
+    try {
+      if (wallet) {
+        const params = request?.params?.request?.params[0];
+        const data = {
+          data: params.data,
+          gasLimit: params.gasLimit,
+          gasPrice: params.gasPrice,
+          nonce: params.nonce,
+          to: params.to,
+          value: params.value,
+        };
+        const result = await wallet.signTransaction(data);
+
+        const response = { id: request?.id, result: result, jsonrpc: "2.0" };
+
+        await web3wallet.respondSessionRequest({
+          topic: request?.topic,
+          response,
+        });
+
+        dispatch(
+          slice.actions.removeRequest({
+            request: request,
+          })
+        );
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+export const handleSendETHTransaction =
+  (request, wallet, connector) => async (dispatch) => {
+    try {
+      if (wallet) {
+        const params = request?.params?.request?.params[0];
+        // gasPrice: params?.gasPrice,
+        // nonce: params?.nonce,
+
+        const transaction = {
+          gasLimit: params?.gas,
+          data: params?.data,
+          to: params?.to,
+          value: params?.value,
+          from: params?.from,
+        };
+
+        const result = await wallet.sendTransaction(transaction);
+        const response = { id: request?.id, result: result, jsonrpc: "2.0" };
+
+        await web3wallet.respondSessionRequest({
+          topic: request?.topic,
+          response,
+        });
+
+        dispatch(
+          slice.actions.removeRequest({
+            request: request,
+          })
+        );
+      }
+    } catch (err) {
+      console.log(err)
+      throw err;
+    }
+  };

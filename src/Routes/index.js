@@ -151,6 +151,11 @@ const publicRoutes = [
     Component: lazy(() => import("../Pages/Checkout")),
     pageTitle: "Checkout",
   },
+  {
+    path: "/connectedDapps",
+    Component: lazy(() => import("./../Pages/ConnectedDapps")),
+    pageTitle: "Connect Dapps",
+  },
 ];
 
 export default AppRoutes;
