@@ -25,7 +25,8 @@ const EditNameModal = ({ isOpen, onClose }) => {
   const handleOnConfirm = async () => {
     try {
       setIsLoading.on();
-      updateUser({ name, bio, address: userDetails.address });
+      updateUser({ id:userDetails.id,
+        name, bio, address: userDetails.address });
     } catch (error) {
       console.log(error);
     } finally {

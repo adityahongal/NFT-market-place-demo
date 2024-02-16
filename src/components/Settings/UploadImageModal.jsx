@@ -33,9 +33,9 @@ const UploadImageModal = ({ isOpen, onClose, context }) => {
       const imagePath = "https://miko.infura-ipfs.io/ipfs/" + imageres.path;
 
       if (context === "avatar") {
-        updateUser({ avatar: imagePath, address: userDetails.address });
+        updateUser({ id:userDetails.id, avatar: imagePath, address: userDetails.address });
       } else if (context === "cover") {
-        updateUser({ background_image: imagePath, address: userDetails.address });
+        updateUser({ id:userDetails.id, background_image: imagePath, address: userDetails.address });
       }
 
       console.log({
