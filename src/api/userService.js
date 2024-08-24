@@ -8,7 +8,9 @@ import { setUser, updateUser } from "./../store/slices/user";
 export const useCreateUser = () => {
   const dispatch = useDispatch();
 
-  const { mutate, isLoading, isError } = useMutation(["create-user"], (body) => api.post("/signup", body), {
+  const { mutate, isLoading, isError } = useMutation({
+    mutationKey:["create-user"], 
+    mutationFn:(body) => api.post("/signup", body),
     onSuccess: ({ data }) => {
       const { account } = data;
       dispatch(setUser(account));
@@ -41,9 +43,11 @@ export const useGetUserByAddress = ({ address: walletAddress }) => {
 };
 
 export const useGetUserByAddressDelay = () => {
-  const { mutateAsync } = useMutation(["get-user-by-address"], ({ address }) =>
+  const { mutateAsync } = useMutation({
+    mutationKey:["get-user-by-address"], 
+    mutationFn:({ address }) =>
     api.get(`/getAccount/${address}`)
-  );
+  });
 
   return { mutateAsync };
 };
@@ -51,10 +55,10 @@ export const useGetUserByAddressDelay = () => {
 export const useGetCurrentUserDetails = () => {
   const dispatch = useDispatch();
 
-  const { mutate, isLoading, isError } = useMutation(
-    ["get-current-user-details"],
-    (walletAddress) => api.get(`/getAccount/${walletAddress}`),
-    {
+  const { mutate, isLoading, isError } = useMutation({
+    mutationKey:["get-current-user-details"],
+    mutationFn:(walletAddress) => api.get(`/getAccount/${walletAddress}`),
+    
       onSuccess: ({ data }) => {
         const { account } = data;
         dispatch(setUser(account));
@@ -80,10 +84,9 @@ export const useGetAllArtists = (page = 0, size = 6) => {
 
 export const useUpdateUserDetails = () => {
   const dispatch = useDispatch();
-  const { mutate, isLoading, isError } = useMutation(
-    ["update-user-details"],
-    (body) => api.put("/updateAccount", body),
-    {
+  const { mutate, isLoading, isError } = useMutation({
+    mutationKey:["update-user-details"],
+    mutationFn:(body) => api.put("/updateAccount", body),
       onSuccess: ({ data }) => {
         const { updates } = data;
         queryClient.invalidateQueries("get-current-user-details");

@@ -35,7 +35,9 @@ export const useGetListingById = ({ tokenId = "", tokenAddress = "" }) => {
 };
 
 export const useUpdateListing = ({ handleOnFinish = () => {}, tokenId = "", tokenAddress = "" }) => {
-  const { isLoading, isError, mutate } = useMutation(["update-listing"], (body) => api.put("/updateListing", body), {
+  const { isLoading, isError, mutate } = useMutation({
+    mutationKey:["update-listing"], 
+    mutationFn:(body) => api.put("/updateListing", body), 
     onSuccess: () => {
       queryClient.invalidateQueries(["get-listing-by-id", tokenId, tokenAddress]);
       queryClient.invalidateQueries(["get-user-listings", 0]);
@@ -47,10 +49,9 @@ export const useUpdateListing = ({ handleOnFinish = () => {}, tokenId = "", toke
 };
 
 export const useDeleteListing = ({ handleOnFinish = () => {}, tokenId = "", tokenAddress = "" }) => {
-  const { isLoading, isError, mutate } = useMutation(
-    ["delete-listing"],
-    (listingId) => api.delete(`/cancelListing/${listingId}`),
-    {
+  const { isLoading, isError, mutate } = useMutation({
+    mutationKey: ["delete-listing"],
+    mutationFn: (listingId) => api.delete(`/cancelListing/${listingId}`),
       onSuccess: () => {
         queryClient.invalidateQueries(["get-listing-by-id", tokenId, tokenAddress]);
         queryClient.invalidateQueries(["get-user-listings", 0]);
@@ -82,9 +83,9 @@ export const useGetRoyaltyAddress = () => {
 
 export const useListNftForSale = (handleOnFinish = () => {}) => {
   const { isLoading, isError, mutate } = useMutation(
-    ["list-nft-for-sale"],
-    (body) => api.post("/listNFTForSale", body),
     {
+    mutationKey: ["list-nft-for-sale"],
+    mutationFn: (body) => api.post("/listNFTForSale", body),
       onSuccess: handleOnFinish,
     }
   );
