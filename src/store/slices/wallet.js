@@ -168,10 +168,8 @@ export const setWallet =
 
       const encryptedWallet = await wallet.encrypt(password);
       localStorage.setItem("wallet", JSON.stringify(encryptedWallet));
-      const provider = new ethers.providers.InfuraProvider(
-        process.env.REACT_APP_INFURA_CHAIN_NAME,
-        process.env.REACT_APP_INFURA_PROVIDER_ID
-      );
+      const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.infura.io/v3/e56ee20f58b946ffa3a0c1de11eb96c4");
+
       wallet = wallet.connect(provider);
 
       const accountDeatils = {
@@ -199,10 +197,8 @@ export const setWalletFromPvtKey =
     let wallet = new ethers.Wallet(pvtKey);
 
     if (wallet !== undefined && wallet !== null) {
-      const provider = new ethers.providers.InfuraProvider(
-        process.env.REACT_APP_INFURA_CHAIN_NAME,
-        process.env.REACT_APP_INFURA_PROVIDER_ID
-      );
+      const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.infura.io/v3/e56ee20f58b946ffa3a0c1de11eb96c4");
+
       wallet = wallet.connect(provider);
 
       mutate(wallet.address.toLowerCase());
@@ -233,10 +229,8 @@ export const login =
       const parsedWallet = JSON.parse(encryptedWallet);
 
       if (parsedWallet !== undefined && parsedWallet !== null) {
-        const provider = new ethers.providers.InfuraProvider(
-          process.env.REACT_APP_INFURA_CHAIN_NAME,
-          process.env.REACT_APP_INFURA_PROVIDER_ID
-        );
+        const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.infura.io/v3/e56ee20f58b946ffa3a0c1de11eb96c4");
+
 
         var wallet = await ethers.Wallet.fromEncryptedJson(
           parsedWallet,
