@@ -1294,13 +1294,13 @@ export const buyNFT =
       const signedUid = uuidv4();
       const privateKey =
         "0x57466afb5491ee372b3b30d82ef7e7a0583c9e36aef0f02435bd164fe172b1d3";
-      if (process.env.REACT_APP_CHAIN_ID === "80001") {
+      if (process.env.REACT_APP_CHAIN_ID === "80002") {
         signedData = signSmartContractData(
           {
             address: wallet.address,
             commodity: "MATIC",
             commodity_amount: Math.ceil(Number(totalpayable)),
-            network: "mumbai",
+            network: "amoy",
             sc_address: marketplaceAddress,
             sc_input_data: testScInputData, // scInputData,
           },

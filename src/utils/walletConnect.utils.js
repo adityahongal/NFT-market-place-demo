@@ -13,7 +13,7 @@ const methods = [
 ];
 
 const chains = [
-    "eip155:80001",
+    "eip155:80002",
     "eip155:137",
     "eip155:11155111",
     "eip155:1"
@@ -54,7 +54,7 @@ export function getApprovedNamespaces(params, address) {
             methods: methods,
             events: ['accountsChanged', 'chainChanged'],
             accounts: [
-                `eip155:80001:${address}`,
+                `eip155:80002:${address}`,
                 `eip155:137:${address}`,
                 `eip155:11155111:${address}`,
                 `eip155:1:${address}`
